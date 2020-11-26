@@ -1,8 +1,6 @@
 package com.example.myhome;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -10,26 +8,51 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.iid.FirebaseInstanceId;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class SignupActivity extends AppCompatActivity {
+import com.example.myhome.Interface.ISignUp;
+import com.example.myhome.Model.User;
+
+public class SignupActivity extends AppCompatActivity implements ISignUp {
     EditText edt_username,edt_password,edt_passwordagain,
             edt_fullname,edt_phone;
     Button btn_signup,btn_signin;
-
-    private FirebaseAuth mAuth;
-
-
+    Api db = new Api();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        bindingView();
+
+        btn_signin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               startActivity(LoginActivity.class);
+            }
+        });
+        btn_signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = edt_username.getText().toString();
+                String password = edt_password.getText().toString();
+                String name = edt_fullname.getText().toString();
+                String phone = edt_phone.getText().toString();
+                String imgUrl = "";
+                User user =  new User(name, phone, imgUrl);
+                if (TextUtils.isEmpty(email))
+                ToastMessage("Please enter  email...");
+                if (TextUtils.isEmpty(password))
+                    ToastMessage("Please enter  password...");
+                 else db.createUser(email, password,user,SignupActivity.this);
+
+            }
+
+        });
+
+    }
+
+    private void bindingView() {
         edt_username = findViewById(R.id.edt_username);
         edt_password = findViewById(R.id.edt_password);
         edt_passwordagain = findViewById(R.id.edt_passwordagain);
@@ -37,63 +60,28 @@ public class SignupActivity extends AppCompatActivity {
         edt_phone = findViewById(R.id.edt_phone);
         btn_signup = findViewById(R.id.btn_signup);
         btn_signin = findViewById(R.id.btn_signin);
-        mAuth = FirebaseAuth.getInstance();
+        edt_fullname = findViewById(R.id.edt_fullname);
+        edt_phone = findViewById(R.id.edt_phone);
+    }
 
-        btn_signin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                startActivity(intent);
+    private void ToastMessage(String m){
+        Toast.makeText(SignupActivity.this, m, Toast.LENGTH_SHORT).show();
+    }
+    private void startActivity(Class c){
+        Intent intent = new Intent(SignupActivity.this,c);
+        startActivity(intent);
+        finish();
 
-            }
-        });
-        btn_signup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //
-
-                String email = edt_username.getText().toString();
-                String password = edt_password.getText().toString();
-                if (TextUtils.isEmpty(email)) {
-                    Toast.makeText(SignupActivity.this, "Please enter  email...", Toast.LENGTH_SHORT).show();
-                }
-                if (TextUtils.isEmpty(password)) {
-                    Toast.makeText(SignupActivity.this, "Please enter  password...", Toast.LENGTH_SHORT).show();
-                } else {
-
-
-                    //đăng ký
-                    mAuth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-
-                                        //chuyển màn hình đăng nhập
-                                        Intent loginIntent = new Intent(SignupActivity.this,LoginActivity.class);
-                                        startActivity(loginIntent);
-                                        finish();
-                                        Toast.makeText(SignupActivity.this, "Account Created Susscessfully...", Toast.LENGTH_SHORT).show();
-
-
-                                    } else {
-                                        String message = task.getException().toString();
-                                        Toast.makeText(SignupActivity.this, "Error" + message, Toast.LENGTH_SHORT).show();
-
-                                    }
-
-                                }
-                            });
-                }
-            }
-
-
-        });
+    }
+    @Override
+    public void onCreateUserSuccessful() {
+        ToastMessage("Account Created Successful");
+        startActivity(MainActivity.class);
 
     }
 
-
-
-
+    @Override
+    public void onCreateUserFail(Exception e) {
+        ToastMessage("Error" + e.toString());
+    }
 }

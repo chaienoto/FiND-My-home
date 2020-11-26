@@ -4,104 +4,95 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#b70725e4"
     android:orientation="vertical"
+    android:gravity="center"
     tools:context=".LoginActivity">
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="40dp">
+        android:padding="10dp">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_username"
-            android:layout_width="287dp"
-            android:layout_height="62dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
-            android:drawableLeft="@drawable/email"
-            android:drawablePadding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_marginHorizontal="20dp"
+            app:boxStrokeColor="@color/colorPrimary"
+            android:hint="Your email">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textSize="18dp"
+                android:layout_gravity="center"
+                android:inputType="textEmailAddress"
+                android:text="@={viewModel.email.ld}"/>
 
-            android:ems="10"
-            android:hint="Email...."
-            android:inputType="textEmailAddress"
-            android:paddingEnd="10dp"
-            android:paddingStart="10dp"
-            android:paddingTop="10dp"
-            android:textColor="#ffffff"
-            android:textColorHint="#ffffff"
-            android:textSize="14sp"
-            android:textStyle="bold"
+        </com.google.android.material.textfield.TextInputLayout>
 
-            />
-
-        <EditText
-
-            android:id="@+id/edt_password"
-            android:layout_width="287dp"
-            android:layout_height="62dp"
-
-
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_below="@+id/edt_username"
-            android:layout_centerHorizontal="true"
-            android:drawableLeft="@drawable/password"
-            android:drawablePadding="5dp"
-            android:hint="Password..."
-            android:inputType="textPassword"
-            android:paddingLeft="10dp"
-            android:paddingStart="10dp"
-            android:textColor="#ffffff"
-            android:textColorHint="#ffffff"
-            android:textSize="14sp" />
+            android:id="@+id/edt_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            app:boxStrokeColor="@color/colorPrimary"
+            android:layout_marginHorizontal="20dp"
+            android:hint="Password">
 
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:textSize="18dp"
+                android:layout_gravity="center"
+                android:inputType="textPassword"
+                android:text="@={viewModel.password.ld}"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btn_dangnhap"
             android:layout_width="match_parent"
-            android:layout_height="65dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
+            android:layout_height="50dp"
+            android:layout_below="@+id/edt_password"
             android:layout_gravity="center"
-            android:layout_marginTop="226dp"
-            android:paddingLeft="20dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/bg_primary10"
+            android:gravity="center"
+            android:text="SIGN IN"
+            android:textAllCaps="true"
+            android:textColor="@color/trueWhite"/>
 
-            android:paddingRight="20dp"
-            android:text="Sign In"
-            android:textColor="#040504"
-            android:textStyle="normal" />
 
         <TextView
             android:id="@+id/tv_singup"
-            android:layout_width="342dp"
+            android:layout_width="wrap_content"
             android:layout_height="50dp"
-
-
             android:layout_below="@+id/btn_dangnhap"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:drawablePadding="5dp"
-            android:paddingLeft="50dp"
-            android:paddingStart="10dp"
+            android:layout_marginTop="10dp"
             android:text="Don't have an account? Sign up"
             android:textAlignment="center"
-            android:textColor="#ffffff"
-            android:textColorHint="#ffffff"
+            android:textColor="@color/trueWhite"
+            android:textColorHint="@color/trueWhite"
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/edt_username"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="-50dp"
-            app:srcCompat="@drawable/logo" />
     </RelativeLayout>
 
+
+
+
+
+
     <com.facebook.login.widget.LoginButton
+        android:visibility="gone"
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
