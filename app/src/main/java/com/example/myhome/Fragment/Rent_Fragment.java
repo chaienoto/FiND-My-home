@@ -107,26 +107,26 @@ public class Rent_Fragment extends Fragment {
                                                                 recyclerView.setAdapter(adapter);
 
                                                                 //bắt sự kiện click vào từng mục (void này phải viết thêm trong adapter)
-                                                                adapter.setOnItemClickedListener(new house_adapter.OnItemClickedListener() {
-                                                                    @Override
-                                                                    public void onItemClick(String ID) {
-                                                                        FragmentManager manager = getActivity().getSupportFragmentManager();
-                                                                        //phải Try catch chỗ này mới ko báo lỗi
-                                                                        try {
-                                                                            Fragment fragment = (Fragment) BlankFragment.class.newInstance();
-                                                                            // đóng gói ID lấy đc từ adapter
-                                                                            Bundle bundle= new Bundle();
-                                                                            bundle.putString("like",rID);
-                                                                            bundle.putString("id",ID);
-                                                                            fragment.setArguments(bundle);
-                                                                            manager.beginTransaction().replace(R.id.flContent,fragment ).commit();
-                                                                        } catch (IllegalAccessException e1) {
-                                                                            e1.printStackTrace();
-                                                                        } catch (java.lang.InstantiationException e1) {
-                                                                            e1.printStackTrace();
-                                                                        }
-                                                                    }
-                                                                });
+//                                                                adapter.setOnItemClickedListener(new house_adapter.OnItemClickedListener() {
+//                                                                    @Override
+//                                                                    public void onItemClick(int ID) {
+//                                                                        FragmentManager manager = getActivity().getSupportFragmentManager();
+//                                                                        //phải Try catch chỗ này mới ko báo lỗi
+//                                                                        try {
+//                                                                            Fragment fragment = (Fragment) BlankFragment.class.newInstance();
+//                                                                            // đóng gói ID lấy đc từ adapter
+//                                                                            Bundle bundle= new Bundle();
+//                                                                            bundle.putString("like",rID);
+//                                                                            bundle.putString("id",ID);
+//                                                                            fragment.setArguments(bundle);
+//                                                                            manager.beginTransaction().replace(R.id.flContent,fragment ).commit();
+//                                                                        } catch (IllegalAccessException e1) {
+//                                                                            e1.printStackTrace();
+//                                                                        } catch (java.lang.InstantiationException e1) {
+//                                                                            e1.printStackTrace();
+//                                                                        }
+//                                                                    }
+//                                                                });
                                                             }
                                                         }).addOnFailureListener(new OnFailureListener() {
                                                             @Override

@@ -17,9 +17,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myhome.Adapter.picture_adapter;
+import com.example.myhome.Api;
 import com.example.myhome.LoginActivity;
 import com.example.myhome.MapsActivity;
 import com.example.myhome.R;
+import com.example.myhome.Store;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -46,8 +48,7 @@ public class Room_info_Fragment extends Fragment {
     FloatingActionButton h_map,h_note,h_call;
     RecyclerView h_recycleview;
     ArrayList<Uri> picture = new ArrayList<Uri>();
-    String pID,dID,hID,uID;
-
+    String path,dID,hID,uID;
     public Room_info_Fragment() {
         // Required empty public constructor
     }
@@ -75,16 +76,11 @@ public class Room_info_Fragment extends Fragment {
         h_recycleview = view.findViewById(R.id.h_recycleview);
 
         Bundle b= getArguments();
-        if (b != null){
-            pID=b.getString("pID");
-            dID=b.getString("dID");
-            hID=b.getString("hID");
-        }
-
+        if (b != null)path=b.getString("path");
         // chạy lên database
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // truy cập vào đường dẫn
-        DocumentReference documentReference = db.collection(pID).document(dID).collection("house").document(hID);
+        DocumentReference documentReference = db.document(path);
         documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable final DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
@@ -144,40 +140,19 @@ public class Room_info_Fragment extends Fragment {
                     h_note.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //check xem thằng nào đang login
-                            AccessToken accessToken = AccessToken.getCurrentAccessToken();
-                            boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-                            if (isLoggedIn){
-                                //lấy id
-                                GraphRequest request = GraphRequest.newMeRequest(
-                                        AccessToken.getCurrentAccessToken(),
-                                        new GraphRequest.GraphJSONObjectCallback() {
-                                            @Override
-                                            public void onCompleted(JSONObject object, GraphResponse response) {
-                                                try {
-                                                    uID=object.getString("id");
-                                                    System.out.println(uID);
-                                                    final FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                                    Map<String,Object> like = new HashMap<>();
-                                                    like.put("like",pID+"/"+dID+"/"+"house/"+hID);
-                                                    db.collection("user").document(uID).set(like);
-                                                    Toast.makeText(getContext(), "Đã Thêm Phòng: "+documentSnapshot.get("house_address")+" Vào danh sách quan tâm", Toast.LENGTH_SHORT).show();
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        });
-                                Bundle parameters = new Bundle();
-                                parameters.putString("fields", "id,name");
-                                request.setParameters(parameters);
-                                request.executeAsync();
+                            if (Store.login){
+                                new Api().updateLikedHouse(path, new Api.OnCompleteAddLikedHouse() {
+                                    @Override
+                                    public void onComplete(Boolean status) {
+                                       if (status)  Toast.makeText(getContext(), "Thanh Cong", Toast.LENGTH_SHORT).show();
+                                       else  Toast.makeText(getContext(), "That bai", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             } else {
                                 Toast.makeText(getContext(), "Bạn Phải đăng nhập để thực hiện chức năng này", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(Room_info_Fragment.this.getActivity(),LoginActivity.class);
                                 startActivity(intent);
                             }
-
-
                         }
                     });
                 }

@@ -1,6 +1,7 @@
 package com.example.myhome.Interface;
 
 public interface ILogin {
-    void loginSuccessFul();
+    void loginSuccess(String email);
+
     void loginFail(Exception e);
 }

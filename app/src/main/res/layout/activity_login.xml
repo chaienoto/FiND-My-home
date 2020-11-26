@@ -13,11 +13,20 @@
         android:layout_height="wrap_content"
         android:padding="10dp">
 
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/logo" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:layout_below="@+id/logo"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_marginHorizontal="20dp"
             app:boxStrokeColor="@color/colorPrimary"
@@ -29,8 +38,7 @@
                 android:layout_height="50dp"
                 android:textSize="18dp"
                 android:layout_gravity="center"
-                android:inputType="textEmailAddress"
-                android:text="@={viewModel.email.ld}"/>
+                android:inputType="textEmailAddress"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,16 +59,16 @@
                 android:layout_height="50dp"
                 android:textSize="18dp"
                 android:layout_gravity="center"
-                android:inputType="textPassword"
-                android:text="@={viewModel.password.ld}"/>
+                android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/btn_dangnhap"
+            android:id="@+id/signIn"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_below="@+id/edt_password"
             android:layout_gravity="center"
+            android:layout_marginTop="10dp"
             android:layout_marginHorizontal="20dp"
             android:background="@drawable/bg_primary10"
             android:gravity="center"
@@ -70,26 +78,19 @@
 
 
         <TextView
-            android:id="@+id/tv_singup"
+            android:id="@+id/tv_signUp"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:layout_below="@+id/btn_dangnhap"
+            android:layout_below="@+id/signIn"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
             android:layout_marginTop="10dp"
             android:text="Don't have an account? Sign up"
             android:textAlignment="center"
-            android:textColor="@color/trueWhite"
-            android:textColorHint="@color/trueWhite"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textColor="@color/black"
+            android:textSize="14sp" />
 
     </RelativeLayout>
-
-
-
-
-
 
     <com.facebook.login.widget.LoginButton
         android:visibility="gone"

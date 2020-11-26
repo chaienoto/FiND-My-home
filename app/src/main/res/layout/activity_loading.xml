@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Loading_Activity"
-    android:background="#95ec7b">
+    tools:context=".Loading_Activity">
 
     <ImageView
         android:id="@+id/imageView3"
@@ -34,9 +33,11 @@
         android:fontFamily="sans-serif"
         android:gravity="left|center"
         android:paddingLeft="5dp"
-        android:text="My Home"
+        android:text="FIND MY HONE"
         android:textColor="#459c2c"
-        android:textSize="15sp"
+        android:textSize="20dp"
+        android:textAllCaps="true"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView3" />

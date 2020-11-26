@@ -9,23 +9,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myhome.Adapter.city_adapter;
+import com.example.myhome.Model.City;
 import com.example.myhome.R;
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class Cities_Fragment extends Fragment {
     RecyclerView recyclerView;
-    ArrayList<String> pName = new ArrayList<String>();
-    ArrayList<String> pID = new ArrayList<String>();
-    ArrayList<Integer> pic = new ArrayList<Integer>();
-
-
-    public Cities_Fragment() {
-        // Required empty public constructor
-    }
-
+    ArrayList<City> cities = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,17 +24,16 @@ public class Cities_Fragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_cities, container, false);
         recyclerView=view.findViewById(R.id.cities_fragment_recycleview);
 
-        //tao du lieu 5 vung
-        pName.add("Hà Nội"); pName.add("Cần Thơ");pName.add("Đà Nẵng"); pName.add("TP.Buôn Mê Thuật"); pName.add("TP.Hồ Chí Minh");
-        pID.add("hanoi"); pID.add("cantho");pID.add("danang"); pID.add("tpbmt"); pID.add("hcm");
-        pic.add(R.drawable.hn); pic.add(R.drawable.ct);pic.add(R.drawable.dn); pic.add(R.drawable.bmt);pic.add(R.drawable.hcm);
-
+        cities.add(new City("Hà Nội", "haNoi", R.drawable.hn));
+        cities.add(new City("Đà Nẵng", "danang", R.drawable.dn));
+        cities.add(new City("TP.Hồ Chí Minh", "hcm", R.drawable.hcm));
 
         //do du lieu len recycleview
-        final city_adapter adapter = new city_adapter(Cities_Fragment.this.getContext(),pic,pID,pName);
+        final city_adapter adapter = new city_adapter(getContext(),cities);
         GridLayoutManager manager = new GridLayoutManager(Cities_Fragment.this.getContext(),2);
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
 
         // bắt sự kiện click vào từng mục (void này phải viết thêm trong adapter)
         adapter.setOnItemClickedListener(new city_adapter.OnItemClickedListener() {
@@ -61,8 +50,6 @@ public class Cities_Fragment extends Fragment {
                     fragment.setArguments(bundle);
                     //chuyển Fragment _data
                     manager.beginTransaction().replace(R.id.flContent,fragment ).commit();
-
-
                     // ko cần quan tâm 2 cái catch bên dưới
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();

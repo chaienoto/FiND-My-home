@@ -8,4 +8,8 @@ public class User {
         this.phoneNumber = phone;
         this.imageUrl= imgUrl;
     }
+
+    public User() {
+
+    }
 }

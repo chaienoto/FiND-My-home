@@ -13,11 +13,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myhome.Interface.ISignUp;
 import com.example.myhome.Model.User;
 
-public class SignupActivity extends AppCompatActivity implements ISignUp {
+public class SignUpActivity extends AppCompatActivity implements ISignUp {
     EditText edt_username,edt_password,edt_passwordagain,
             edt_fullname,edt_phone;
     Button btn_signup,btn_signin;
-    Api db = new Api();
+    Api api = new Api();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public class SignupActivity extends AppCompatActivity implements ISignUp {
                 ToastMessage("Please enter  email...");
                 if (TextUtils.isEmpty(password))
                     ToastMessage("Please enter  password...");
-                 else db.createUser(email, password,user,SignupActivity.this);
+                 else api.createUser(email, password,user,SignUpActivity.this);
 
             }
 
@@ -65,19 +65,17 @@ public class SignupActivity extends AppCompatActivity implements ISignUp {
     }
 
     private void ToastMessage(String m){
-        Toast.makeText(SignupActivity.this, m, Toast.LENGTH_SHORT).show();
+        Toast.makeText(SignUpActivity.this, m, Toast.LENGTH_SHORT).show();
     }
     private void startActivity(Class c){
-        Intent intent = new Intent(SignupActivity.this,c);
+        Intent intent = new Intent(SignUpActivity.this,c);
         startActivity(intent);
         finish();
-
     }
     @Override
     public void onCreateUserSuccessful() {
         ToastMessage("Account Created Successful");
         startActivity(MainActivity.class);
-
     }
 
     @Override

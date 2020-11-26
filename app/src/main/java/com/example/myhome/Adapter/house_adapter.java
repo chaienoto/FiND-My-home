@@ -44,7 +44,7 @@ public class house_adapter extends  RecyclerView.Adapter<house_adapter.ViewHolde
             @Override
             public void onClick(View v) {
                 if (onItemClickedListener != null) {
-                    onItemClickedListener.onItemClick(houses.get(i).ID);
+                    onItemClickedListener.onItemClick(i);
                 }
             }
         });
@@ -70,7 +70,7 @@ public class house_adapter extends  RecyclerView.Adapter<house_adapter.ViewHolde
     }
 
     public interface OnItemClickedListener {
-        void onItemClick(String ID);
+        void onItemClick(int ID);
     }
 
     private OnItemClickedListener onItemClickedListener;

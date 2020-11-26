@@ -5,12 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.example.myhome.Model.City;
 import com.example.myhome.R;
 import com.squareup.picasso.Picasso;
 
@@ -18,15 +17,12 @@ import java.util.ArrayList;
 
 public class city_adapter extends RecyclerView.Adapter<city_adapter.ViewHolder> {
     Context context;
-    ArrayList<Integer> pic = new ArrayList<Integer>();
-    ArrayList<String> id = new ArrayList<String>();
-    ArrayList<String> name = new ArrayList<String>();
+    ArrayList<City> cities = new ArrayList<>();
+    private OnItemClickedListener onItemClickedListener;
 
-    public city_adapter(Context context, ArrayList<Integer> pic, ArrayList<String> id, ArrayList<String> name) {
+    public city_adapter(Context context, ArrayList<City> cities) {
         this.context = context;
-        this.pic = pic;
-        this.id = id;
-        this.name = name;
+        this.cities = cities;
     }
 
     @NonNull
@@ -38,15 +34,16 @@ public class city_adapter extends RecyclerView.Adapter<city_adapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
-        viewHolder.name_city.setText(name.get(i));
-        Picasso.with(context).load(pic.get(i)).resize(200, 140)
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int position ) {
+        final City city = cities.get(position);
+        viewHolder.name_city.setText(city.cityName);
+        Picasso.with(context).load(city.cityImg).resize(180, 180)
                 .centerCrop().into(viewHolder.img_city);
         viewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (onItemClickedListener != null) {
-                    onItemClickedListener.onItemClick(id.get(i), name.get(i));
+                    onItemClickedListener.onItemClick(city.cityId, city.cityName);
                 }
             }
         });
@@ -54,12 +51,12 @@ public class city_adapter extends RecyclerView.Adapter<city_adapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return id.size();
+        return cities.size();
     }
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
+        LinearLayout cardView;
         ImageView img_city;
         TextView name_city;
         public ViewHolder(@NonNull View itemView) {
@@ -72,8 +69,6 @@ public class city_adapter extends RecyclerView.Adapter<city_adapter.ViewHolder> 
     public interface OnItemClickedListener {
         void onItemClick(String ID, String Name);
     }
-
-    private OnItemClickedListener onItemClickedListener;
 
     public void setOnItemClickedListener(OnItemClickedListener onItemClickedListener) {
         this.onItemClickedListener = onItemClickedListener;
