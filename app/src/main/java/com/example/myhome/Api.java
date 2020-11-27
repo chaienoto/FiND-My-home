@@ -56,6 +56,11 @@ public class Api implements IApi {
     }
 
     @Override
+    public void logout() {
+        mAuth.signOut();
+    }
+
+    @Override
     public void getCurrentUserData(final OnCompleteGetUserData callback) {
         Log.d("User name", "fetching");
         if (mAuth.getCurrentUser() != null){

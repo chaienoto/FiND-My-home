@@ -9,6 +9,8 @@ public interface IApi {
 
     void login(String id, String pass, ILogin callback);
 
+    void logout();
+
     void getCurrentUserData(Api.OnCompleteGetUserData callback);
 
     void getLikedHouse(Api.OnCompleteGetLikedHouse callback);

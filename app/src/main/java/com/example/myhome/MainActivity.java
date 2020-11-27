@@ -2,6 +2,7 @@ package com.example.myhome;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,8 +52,9 @@ public class MainActivity extends AppCompatActivity {
                 Store.name = user.Name;
                 Store.phoneNumber = user.phoneNumber;
                 Store.imgUrl = user.imageUrl;
-                Toast.makeText(MainActivity.this, user.Name, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Well comeback " + user.Name, Toast.LENGTH_SHORT).show();
                 profile_name.setText(user.Name);
+                navigationView.getMenu().findItem(R.id.nav_login_activity).setTitle("Logout");
 //                Uri uri= Uri.parse(user.imageUrl);
 //                Picasso.with(MainActivity.this).load(uri).into(profile_pic);
             }
@@ -84,8 +86,12 @@ public class MainActivity extends AppCompatActivity {
                         else Toast.makeText(MainActivity.this, "You need to login for used this feature", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_login_activity:
-                        Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-                        startActivity(intent);
+                        if (Store.login) {
+                            logout();
+                        } else {
+                            Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                            startActivity(intent);
+                        }
                         break;
                     case R.id.nav_cities_fragment:
                     default: fragClass=Cities_Fragment.class;
@@ -110,12 +116,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void logout() {
+        new Api().logout();
+        resetStore();
+        Toast.makeText(MainActivity.this, "Logout Success", Toast.LENGTH_SHORT).show();
+    }
+
     private void resetStore() {
         Store.login = false;
         Store.name = "";
         Store.id = "";
         Store.phoneNumber = "";
         Store.imgUrl = "";
+        profile_name.setText("You not login yet");
+        navigationView.getMenu().findItem(R.id.nav_login_activity).setTitle("Sign in");
     }
 
     private void bindingView() {
