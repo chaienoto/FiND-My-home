@@ -13,4 +13,6 @@ public interface IDB_Helper {
     void getLikedHouse(DB_help.OnGetLikedData callback);
 
     boolean updateLikedHouse(String s);
+
+    boolean unlikeThisRoom(String path);
 }

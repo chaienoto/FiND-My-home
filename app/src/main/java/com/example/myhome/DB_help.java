@@ -65,51 +65,68 @@ public class DB_help implements IDB_Helper {
                     final ArrayList<String> like_house_id = (ArrayList<String>) documentSnapshot.get("like_house_id");
                     if (like_house_id != null) {
                         final ArrayList<House> houses = new ArrayList<House>();
-                        for (final String s : like_house_id) {
-                            DocumentReference houseRef = db.document(s);
-                            houseRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        for (final String path : like_house_id) {
+                            getSummaryHouseInfo(path, new onGetHouseSummaryInfo() {
                                 @Override
-                                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                                    if (documentSnapshot != null && documentSnapshot.exists()) {
-                                        final String house = documentSnapshot.getId();
-                                        final String address=documentSnapshot.get("house_address").toString();
-                                        final String price=documentSnapshot.get("house_price").toString();
-                                        final String detail=documentSnapshot.get("house_detail").toString();
-                                        ArrayList<String> list = (ArrayList<String>) documentSnapshot.get("house_picture_id");
-                                        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-                                        storageRef.child("images/" + list.get(0)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                            @Override
-                                            public void onSuccess(Uri uri) {
-                                                houses.add(new House(house,address,price,detail,uri));
-                                                callback.onComplete(houses,like_house_id);
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                            }
-                                        });
-                                    }
+                                public void onComplete(House house) {
+                                    houses.add(house);
+                                    callback.onComplete(houses);
                                 }
                             });
                         }
 
-                    } else callback.onComplete(null, null);
+                    } else callback.onComplete(null);
 
-                } else callback.onComplete(null, null);
+                } else callback.onComplete(null);
             }
         });
+    }
 
+    public void getSummaryHouseInfo(final String path, final onGetHouseSummaryInfo callback){
+        DocumentReference houseRef = db.document(path);
+        houseRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    final String house = documentSnapshot.getId();
+                    final String address = documentSnapshot.get("house_address").toString();
+                    final String price = documentSnapshot.get("house_price").toString();
+                    final String detail = documentSnapshot.get("house_detail").toString();
+                    ArrayList<String> list = (ArrayList<String>) documentSnapshot.get("house_picture_id");
+                    StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+                    storageRef.child("images/" + list.get(0)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            callback.onComplete(new House(house,address,price,detail,uri,path));
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                        }
+                    });
+                }
+            }
+        });
 
     }
 
     @Override
     public boolean updateLikedHouse(String s) {
-        return likeHelper.update("like_house_id", FieldValue.arrayUnion(s)).isSuccessful();
+        return !likeHelper.update("like_house_id", FieldValue.arrayUnion(s)).isSuccessful();
+    }
+
+    @Override
+    public boolean unlikeThisRoom(String s) {
+        return likeHelper.update("like_house_id", FieldValue.arrayRemove(s)).isSuccessful();
     }
 
     public interface OnGetUserData{void onComplete(User user);
     }
-    public interface OnGetLikedData{void onComplete(ArrayList<House> houses, ArrayList<String> idPath);
+
+    public interface OnGetLikedData{void onComplete(ArrayList<House> houses);
+    }
+
+    public interface onGetHouseSummaryInfo{ void onComplete(House house);
     }
 
 }

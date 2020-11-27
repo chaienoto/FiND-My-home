@@ -19,12 +19,19 @@ import java.util.ArrayList;
 
 public class house_adapter extends  RecyclerView.Adapter<house_adapter.ViewHolder>{
     Context context;
-    ArrayList<House> houses= new ArrayList<House>();
+    ArrayList<House> houses;
+    OnItemClickedListener listener;
 
-    public house_adapter(Context context, ArrayList<House> houses) {
+    public house_adapter(Context context, ArrayList<House> houses, OnItemClickedListener listener) {
         this.context = context;
         this.houses = houses;
+        this.listener = listener;
     }
+
+//    public house_adapter(Context context, ArrayList<House> houses) {
+//        this.context = context;
+//        this.houses = houses;
+//    }
 
     @NonNull
     @Override
@@ -36,16 +43,15 @@ public class house_adapter extends  RecyclerView.Adapter<house_adapter.ViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
-        Picasso.with(context).load(houses.get(i).img).into(viewHolder.room_img);
-        viewHolder.room_address.setText("Địa Chỉ: "+houses.get(i).address);
-        viewHolder.room_price.setText("Giá Phòng: "+houses.get(i).price);
-        viewHolder.room_detail.setText("Mô Tả: "+houses.get(i).detail);
+        final House data = houses.get(i);
+        Picasso.with(context).load(data.img).into(viewHolder.room_img);
+        viewHolder.room_address.setText("Địa Chỉ: "+data.address);
+        viewHolder.room_price.setText("Giá Phòng: "+data.price);
+        viewHolder.room_detail.setText("Mô Tả: "+data.detail);
         viewHolder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onItemClickedListener != null) {
-                    onItemClickedListener.onItemClick(i);
-                }
+                listener.onItemClick(data.path);
             }
         });
     }
@@ -70,13 +76,8 @@ public class house_adapter extends  RecyclerView.Adapter<house_adapter.ViewHolde
     }
 
     public interface OnItemClickedListener {
-        void onItemClick(int ID);
+        void onItemClick(String path);
     }
 
-    private OnItemClickedListener onItemClickedListener;
-
-    public void setOnItemClickedListener(OnItemClickedListener onItemClickedListener) {
-        this.onItemClickedListener = onItemClickedListener;
-    }
 }
 

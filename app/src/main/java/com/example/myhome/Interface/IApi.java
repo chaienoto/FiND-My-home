@@ -14,4 +14,6 @@ public interface IApi {
     void getLikedHouse(Api.OnCompleteGetLikedHouse callback);
 
     void updateLikedHouse(String s, Api.OnCompleteAddLikedHouse callback);
+
+    void unlikeThisRoom(String path, Api.OnUnlikeComplete callback);
 }

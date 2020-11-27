@@ -24,13 +24,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myhome.Adapter.picture_adapter;
 import com.example.myhome.LoginActivity;
 import com.example.myhome.R;
+import com.example.myhome.Store;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -58,7 +61,7 @@ public class Create_house_Fragment extends Fragment {
     ArrayList<String> hType = new ArrayList<String>();
     ArrayList<Uri> house_picture = new ArrayList<Uri>();
     ArrayList<String> house_picture_id = new ArrayList<String>();
-    ArrayList<String> house_user_id = new ArrayList<String>();
+    String house_path = "";
     ArrayList<String> pName = new ArrayList<String>();
     final ArrayList<String> pID = new ArrayList<String>();
     ArrayList<String> dName = new ArrayList<String>();
@@ -89,30 +92,11 @@ public class Create_house_Fragment extends Fragment {
         house_detail = view.findViewById(R.id.house_detail);
         picture_house_recycleview = view.findViewById(R.id.picture_house_recycleview);
 
-        //lấy Thông tin cơ bản nhét lên mấy cái kia
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
-        if (isLoggedIn){
-            GraphRequest request = GraphRequest.newMeRequest(
-                    AccessToken.getCurrentAccessToken(),
-                    new GraphRequest.GraphJSONObjectCallback() {
-                        @Override
-                        public void onCompleted(JSONObject object, GraphResponse response) {
-                            try {
-                                house_owner.setText(object.getString("name"));
-                                ID = object.getString("id");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-            Bundle parameters = new Bundle();
-            parameters.putString("fields", "id,name");
-            request.setParameters(parameters);
-            request.executeAsync();
 
-            // do du lieu lên mấy cái spinner
-            // đổ lên cái loại phòng
+
+            house_owner.setText(Store.name);
+            house_phone.setText(Store.phoneNumber);
+
             hType.add("KTX");
             hType.add("Phòng đơn không chung chủ");
             hType.add("Dãy phòng trọ đơn");
@@ -120,23 +104,21 @@ public class Create_house_Fragment extends Fragment {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(Create_house_Fragment.this.getContext(), android.R.layout.simple_list_item_1, hType);
             house_type.setAdapter(adapter);
 
-            // đổ cái tỉnh lên
             pName.add("Hà Nội");
             pName.add("Cần Thơ");
             pName.add("TP. Buôn Mê Thuật");
             pName.add("TP. Hồ Chí Minh");
+            pName.add("Đà Nẵng");
             pID.add("hanoi");
             pID.add("cantho");
             pID.add("tpbmt");
             pID.add("hcm");
+            pID.add("danang");
             ArrayAdapter<String> adapter0 = new ArrayAdapter<String>(Create_house_Fragment.this.getContext(), android.R.layout.simple_list_item_1, pName);
             house_city.setAdapter(adapter0);
-
-            // lấy dữ liệu đổ vào quận/ huyện, chỗ này phụ thuộc vào tỉnh đang là cái gì, lưu dấu thằng tỉnh
             house_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    // đang chọn thằng nào thì lưu dấu thằng đó
                     cpID = pID.get(position);
                     dID.clear();
                     dName.clear();
@@ -171,15 +153,14 @@ public class Create_house_Fragment extends Fragment {
                                         @Override
                                         public void onClick(View v) {
                                             house_picture_id.clear();
-                                            house_user_id.clear();// tạo mảng lấy ID hình
 
-                                            // up hình lên FBase
+
                                             for (Uri uri:house_picture) {
-                                                // tọa cái xoay xoay
+
                                                 final ProgressDialog progressDialog = new ProgressDialog(getContext());
                                                 progressDialog.setTitle("Uploading");
                                                 progressDialog.show();
-                                                //truy cap fbase up data
+
                                                 StorageReference storageRef = storage.getReference();
                                                 final Uri file = Uri.fromFile(new File(String.valueOf(uri)));
                                                 UUID img= UUID.randomUUID();
@@ -220,14 +201,12 @@ public class Create_house_Fragment extends Fragment {
                                             house.put("house_service", house_service.getText().toString());
                                             house.put("house_detail", house_detail.getText().toString());
                                             house.put("house_picture_id", house_picture_id);
-                                            // tạo ID cho cái phòng mới, up lên fb, và cập nhật lại id cho thằng chử
                                             UUID hID= UUID.randomUUID();
-                                            house_user_id.add(pID.get(house_city.getSelectedItemPosition())+"/"+dID.get(house_district.getSelectedItemPosition())+"/house/"+hID);
-                                            Map<String,Object> houseID = new HashMap<>();
-                                            houseID.put("house_id",house_user_id);
+                                            house_path = pID.get(house_city.getSelectedItemPosition())+"/"+dID.get(house_district.getSelectedItemPosition())+"/house/"+hID;
                                             db.collection(cpID).document(cdID).collection("house").document(hID.toString()).set(house);
-                                            db.collection("user").document(ID).update(houseID);
-                                            Toast.makeText(getContext(), "Đăng Tin Hoàn Tất", Toast.LENGTH_SHORT).show();
+                                            DocumentReference rentHelper = db.collection("user").document(Store.id).collection("store").document("rent");
+                                            rentHelper.update("rent_house_id", FieldValue.arrayUnion(house_path)).isSuccessful();
+                                            Toast.makeText(getContext(), "Post Successfully", Toast.LENGTH_SHORT).show();
                                         }
                                     });
 
@@ -247,11 +226,7 @@ public class Create_house_Fragment extends Fragment {
                 public void onNothingSelected(AdapterView<?> parent) {
                 }
             });
-        } else {
-            Toast.makeText(getContext(), "Bạn Phải đăng nhập để thực hiện chức năng này", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(Create_house_Fragment.this.getActivity(),LoginActivity.class);
-            startActivity(intent);
-        }
+
         return view;
     }
 

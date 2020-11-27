@@ -43,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
         api.getCurrentUserData(new Api.OnCompleteGetUserData() {
             @Override
             public void onCompleteGetData(User user) {
+                if (user==null) {
+                    resetStore();
+                    return;
+                }
                 Store.login = true;
                 Store.name = user.Name;
                 Store.phoneNumber = user.phoneNumber;
@@ -72,10 +76,12 @@ public class MainActivity extends AppCompatActivity {
                 Class fragClass = null;
                 switch (item.getItemId()){
                     case R.id.nav_like_fragment:
-                        fragClass=Like_Fragment.class;
+                        if (Store.login) fragClass=Like_Fragment.class;
+                        else Toast.makeText(MainActivity.this, "You need to login for used this feature", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_create_house_fragment:
-                        fragClass=Rent_Fragment.class;
+                        if (Store.login) fragClass=Rent_Fragment.class;
+                        else Toast.makeText(MainActivity.this, "You need to login for used this feature", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_login_activity:
                         Intent intent = new Intent(MainActivity.this,LoginActivity.class);
@@ -104,6 +110,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void resetStore() {
+        Store.login = false;
+        Store.name = "";
+        Store.id = "";
+        Store.phoneNumber = "";
+        Store.imgUrl = "";
+    }
+
     private void bindingView() {
         drawer=(DrawerLayout)findViewById(R.id.drawer_layout);
         toolbar=(Toolbar)findViewById(R.id.toolbar);
@@ -119,44 +133,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-//    private  void getData(){
-//        User user = api.getCurrentUserData();
-//        // lấy thông tin từ fb
-//        GraphRequest request = GraphRequest.newMeRequest(
-//                AccessToken.getCurrentAccessToken(),
-//                new GraphRequest.GraphJSONObjectCallback() {
-//                    @Override
-//                    public void onCompleted(final JSONObject object, GraphResponse response) {
-//                        try {
-//                            //kiểm tra xem đã tồn tại cái nào trong db của mình chưa
-//                            final FirebaseFirestore db = FirebaseFirestore.getInstance();
-//                            CollectionReference userRef = db.collection("user");
-//                            // bắt đầu tìm
-//                            userRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//                                @Override
-//                                public void onEvent(@javax.annotation.Nullable QuerySnapshot queryDocumentSnapshots, @javax.annotation.Nullable FirebaseFirestoreException e) {
-//                                    int check = 0; // biến kiểm tra
-//                                     for (QueryDocumentSnapshot doc: queryDocumentSnapshots){
-//                                        try {
-//                                            if (doc.getId()== object.getString("id")) check = 1; // check = 1 là có rồi thì thôi
-//                                        } catch (JSONException e1) {
-//                                            e1.printStackTrace();
-//                                        }
-//                                    }
-//                                }
-//                            });
-//                            profile_name.setText(object.getString("name"));
-//                            Uri uri= Uri.parse((String) object.getJSONObject("picture").getJSONObject("data").get("url"));
-//                            Picasso.with(MainActivity.this).load(uri).into(profile_pic);
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//        Bundle parameters = new Bundle();
-//        parameters.putString("fields", "id,name,email,gender,birthday,picture{url}");
-//        request.setParameters(parameters);
-//        request.executeAsync();
-//    }
 
 }

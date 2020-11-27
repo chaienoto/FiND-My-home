@@ -19,49 +19,45 @@ import com.example.myhome.R;
 import java.util.ArrayList;
 
 
-public class Like_Fragment extends Fragment {
+public class Like_Fragment extends Fragment implements house_adapter.OnItemClickedListener {
     RecyclerView recyclerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view= inflater.inflate(R.layout.fragment_like, container, false);
         recyclerView=view.findViewById(R.id.like_fragment_recycleview);
+
         new Api().getLikedHouse(new Api.OnCompleteGetLikedHouse() {
             @Override
-            public void onComplete(ArrayList<House> list, final ArrayList<String> idPath) {
+            public void onComplete(ArrayList<House> list) {
                 if (list.isEmpty()) return;
-                Log.d("OnGetUserData", list.toString());
-                house_adapter adapter = new house_adapter(Like_Fragment.this.getContext(),list);
-                LinearLayoutManager manager = new LinearLayoutManager(Like_Fragment.this.getContext());
+                house_adapter adapter = new house_adapter(getActivity(),list, Like_Fragment.this);
+                LinearLayoutManager manager = new LinearLayoutManager(getActivity());
                 recyclerView.setLayoutManager(manager);
                 recyclerView.setAdapter(adapter);
-                adapter.setOnItemClickedListener(new house_adapter.OnItemClickedListener() {
-                    @Override
-                    public void onItemClick(int ID) {
-                        FragmentManager manager = getActivity().getSupportFragmentManager();
-                        //phải Try catch chỗ này mới ko báo lỗi
-                        try {
-                            Fragment fragment = (Fragment) Room_info_Fragment.class.newInstance();
-                            // đóng gói ID lấy đc từ adapter
-                            Bundle bundle= new Bundle();
-                            bundle.putString("path",idPath.get(ID));
-                            fragment.setArguments(bundle);
-                            manager.beginTransaction().replace(R.id.flContent,fragment ).commit();
-                        } catch (IllegalAccessException e1) {
-                            e1.printStackTrace();
-                        } catch (java.lang.InstantiationException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                });
             }
         });
-//
-
 
         return view;
     }
 
+    @Override
+    public void onItemClick(String path)  {
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        Fragment fragment = null;
+        try {
+            fragment = (Fragment) Room_info_Fragment.class.newInstance();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (java.lang.InstantiationException e) {
+            e.printStackTrace();
+        }
+        Bundle bundle = new Bundle();
+        bundle.putString("path", path);
+        fragment.setArguments(bundle);
+        manager.beginTransaction().replace(R.id.flContent,fragment ).commit();
+
+    }
 }

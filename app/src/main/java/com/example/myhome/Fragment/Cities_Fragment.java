@@ -24,9 +24,11 @@ public class Cities_Fragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_cities, container, false);
         recyclerView=view.findViewById(R.id.cities_fragment_recycleview);
 
-        cities.add(new City("Hà Nội", "haNoi", R.drawable.hn));
+        cities.add(new City("Hà Nội", "hanoi", R.drawable.hn));
         cities.add(new City("Đà Nẵng", "danang", R.drawable.dn));
         cities.add(new City("TP.Hồ Chí Minh", "hcm", R.drawable.hcm));
+        cities.add(new City("TP.Buôn Mê Thuột", "bmt", R.drawable.bmt));
+        cities.add(new City("Cần Thơ", "cantho", R.drawable.ct));
 
         //do du lieu len recycleview
         final city_adapter adapter = new city_adapter(getContext(),cities);

@@ -31,7 +31,7 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 
-public class House_Fragment extends Fragment {
+public class House_Fragment extends Fragment implements house_adapter.OnItemClickedListener  {
     RecyclerView recyclerView;
     ArrayList<House> houses = new ArrayList<House>();
     String dID,pID,dName;
@@ -45,29 +45,25 @@ public class House_Fragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_house_, container, false);
         recyclerView=view.findViewById(R.id.house_fragment_recycleview);
 
-        // lấy id của cái quận, tỉnh
         Bundle b= getArguments();
         if (b != null){
             dID=b.getString("dID");
             dName=b.getString("dName");
             pID=b.getString("pID");
         }
-        // set lại title để biết vừa chọn cái gì
-        getActivity().setTitle(getActivity().getTitle()+"/"+dName);
-        //Truy cập vào data base để lấy dữ liệu ra
+        getActivity().setTitle(getActivity().getTitle()+" - "+dName);
         getRealtimeData(pID,dID);
         return view;
     }
 
     public void getRealtimeData(final String pID, final String dID) {
-        // chạy lên database
+
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // truy cập vào đường dẫn
         CollectionReference collectionReference = db.collection(pID+"/"+dID+"/house");
         collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable final FirebaseFirestoreException e) {
-                // chỗ này để lấy hết tập con của cái house
+                if (!queryDocumentSnapshots.isEmpty())
                 for (final QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                     if (doc.getId() != null) {
                         final String house = doc.getId();
@@ -76,7 +72,7 @@ public class House_Fragment extends Fragment {
                         DocumentReference documentReference = db.collection(pID).document(dID).collection("house").document(house);
                         documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                             @Override
-                            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                            public void onEvent(@Nullable final DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                                 if (documentSnapshot != null && documentSnapshot.exists()) {
                                     final String address=documentSnapshot.get("house_address").toString();
                                     final String price=documentSnapshot.get("house_price").toString();
@@ -87,35 +83,11 @@ public class House_Fragment extends Fragment {
                                         @Override
                                         public void onSuccess(Uri uri) {
                                             Uri picture=uri;
-                                            houses.add(new House(house,address,price,detail,picture));
-//                                        // dùng adapter để đỏ dữ liệu lên
-                                            house_adapter adapter = new house_adapter(House_Fragment.this.getContext(),houses);
+                                            houses.add(new House(house,address,price,detail,picture,pID+"/"+dID+"/house/"+documentSnapshot.getId()));
+                                            house_adapter adapter = new house_adapter(getActivity(),houses, House_Fragment.this);
                                             LinearLayoutManager manager = new LinearLayoutManager(House_Fragment.this.getContext());
                                             recyclerView.setLayoutManager(manager);
                                             recyclerView.setAdapter(adapter);
-//
-//                                        //bắt sự kiện click vào từng mục (void này phải viết thêm trong adapter)
-//                                            adapter.setOnItemClickedListener(new house_adapter.OnItemClickedListener() {
-//                                                @Override
-//                                                public void onItemClick(int ID) {
-//                                                    FragmentManager manager = getActivity().getSupportFragmentManager();
-//                                                    //phải Try catch chỗ này mới ko báo lỗi
-//                                                    try {
-//                                                        Fragment fragment = (Fragment) Room_info_Fragment.class.newInstance();
-//                                                        // đóng gói ID lấy đc từ adapter
-//                                                        Bundle bundle= new Bundle();
-//                                                        bundle.putString("pID",pID);
-//                                                        bundle.putString("dID",dID);
-//                                                        bundle.putString("hID",ID);
-//                                                        fragment.setArguments(bundle);
-//                                                        manager.beginTransaction().replace(R.id.flContent,fragment ).commit();
-//                                                    } catch (IllegalAccessException e1) {
-//                                                        e1.printStackTrace();
-//                                                    } catch (java.lang.InstantiationException e1) {
-//                                                        e1.printStackTrace();
-//                                                    }
-//                                                }
-//                                            });
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
@@ -129,5 +101,23 @@ public class House_Fragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onItemClick(String path) {
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        Fragment fragment = null;
+        try {
+            fragment = (Fragment) Room_info_Fragment.class.newInstance();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (java.lang.InstantiationException e) {
+            e.printStackTrace();
+        }
+        Bundle bundle = new Bundle();
+        bundle.putString("path", path);
+        fragment.setArguments(bundle);
+        manager.beginTransaction().replace(R.id.flContent,fragment ).commit();
+
     }
 }

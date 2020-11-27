@@ -45,9 +45,8 @@ public class District_Fragment extends Fragment {
             pID=b.getString("pID");
             pName=b.getString("pName");
         }
-        // set lại title để biết vừa chọn cái gì
         getActivity().setTitle(pName);
-        //Truy cập vào data base để lấy dữ liệu ra
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference collectionReference=db.collection(pID);
         collectionReference.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -61,30 +60,30 @@ public class District_Fragment extends Fragment {
                         dName.add(String.valueOf(doc.get("name")));
                     }
                 }
-                // dùng lại adapter để đỏ dữ liệu lên
+
                 one_item_text_Adapter adapter = new one_item_text_Adapter(District_Fragment.this.getContext(),dName,dID);
                 LinearLayoutManager manager = new LinearLayoutManager(District_Fragment.this.getContext());
                 recyclerView.setLayoutManager(manager);
                 recyclerView.setAdapter(adapter);
 
-                // bắt sự kiện click vào từng mục (void này phải viết thêm trong adapter)
+
+
                 adapter.setOnItemClickedListener(new one_item_text_Adapter.OnItemClickedListener() {
                     @Override
                     public void onItemClick(String ID,String Name) {
-                        // lấy dữ liệu (ID là id của cái quận đc chọn )và chuyển qua Fragment house
+
                         FragmentManager manager = getActivity().getSupportFragmentManager();
                         try {
-                            //phải Try catch chỗ này mới ko báo lỗi
+
                             Fragment fragment = (Fragment) House_Fragment.class.newInstance();
-                            // đóng gói ID lấy đc từ adapter
+
                             Bundle bundle= new Bundle();
                             bundle.putString("dID",ID);
                             bundle.putString("dName",Name);
                             bundle.putString("pID",pID);
                             fragment.setArguments(bundle);
-                            //chuyển Fragment _data
+
                             manager.beginTransaction().replace(R.id.flContent,fragment ).commit();
-                            // ko cần quan tâm 2 cái catch bên dưới
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         } catch (java.lang.InstantiationException e) {

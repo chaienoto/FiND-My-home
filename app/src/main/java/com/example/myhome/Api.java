@@ -75,27 +75,45 @@ public class Api implements IApi {
     public void getLikedHouse(final OnCompleteGetLikedHouse callback) {
         new DB_help().getLikedHouse(new DB_help.OnGetLikedData() {
             @Override
-            public void onComplete(ArrayList<House> houses, ArrayList<String> s) {
-                callback.onComplete(houses,s);
+            public void onComplete(ArrayList<House> houses) {
+                callback.onComplete(houses);
             }
         });
     }
 
     @Override
-    public void updateLikedHouse(String s, OnCompleteAddLikedHouse callback) {
-        Log.d("updateLikedHouse", s);
-        if (new DB_help().updateLikedHouse(s)) callback.onComplete(true);
-        else callback.onComplete(false);
+    public void updateLikedHouse(String path, OnCompleteAddLikedHouse callback) {
+        if (new DB_help().updateLikedHouse(path)) callback.onComplete(true);
+        else {
+            new DB_help().unlikeThisRoom(path);
+            callback.onComplete(false);
+        }
 
     }
+
+    @Override
+    public void unlikeThisRoom(String path, OnUnlikeComplete callback) {
+
+    }
+
+
+//    @Override
+//    public void unlikeThisRoom(String path, OnUnlikeComplete callback) {
+//        if (new DB_help().unlikeThisRoom(path)) callback.onComplete(false);
+//        else callback.onComplete(true);
+//    }
 
     public interface OnCompleteGetUserData {
         void onCompleteGetData(User user);
     }
     public interface OnCompleteGetLikedHouse {
-        void onComplete(ArrayList<House> list, ArrayList<String> s);
+        void onComplete(ArrayList<House> list);
     }
     public interface OnCompleteAddLikedHouse {
+        void onComplete(Boolean status);
+    }
+
+    public interface OnUnlikeComplete {
         void onComplete(Boolean status);
     }
 }
