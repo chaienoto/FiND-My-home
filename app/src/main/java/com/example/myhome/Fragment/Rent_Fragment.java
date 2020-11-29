@@ -2,6 +2,7 @@ package com.example.myhome.Fragment;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +77,7 @@ public class Rent_Fragment extends Fragment implements house_adapter.OnItemClick
                 if (!rent_house_ids.isEmpty()) {
                     final ArrayList<House> houses = new ArrayList<House>();
                     for (final String path : rent_house_ids) {
+                        Log.d("rentID", path);
                         new DB_help().getSummaryHouseInfo(path, new DB_help.onGetHouseSummaryInfo() {
                             @Override
                             public void onComplete(House house) {

@@ -92,22 +92,24 @@ public class DB_help implements IDB_Helper {
                     final String address = documentSnapshot.get("house_address").toString();
                     final String price = documentSnapshot.get("house_price").toString();
                     final String detail = documentSnapshot.get("house_detail").toString();
-                    ArrayList<String> list = (ArrayList<String>) documentSnapshot.get("house_picture_id");
                     StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-                    storageRef.child("images/" + list.get(0)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            callback.onComplete(new House(house,address,price,detail,uri,path));
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                        }
-                    });
+                    ArrayList<String> list = (ArrayList<String>) documentSnapshot.get("house_picture_id");
+                    if (!list.isEmpty()) {
+                        storageRef.child("images/" + list.get(0)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                callback.onComplete(new House(house,address,price,detail,uri,path));
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                            }
+                        });
+                    } else  callback.onComplete(new House(house,address,price,detail,null,path));
+
                 }
             }
         });
-
     }
 
     @Override

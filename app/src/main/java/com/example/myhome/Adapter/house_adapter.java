@@ -44,6 +44,7 @@ public class house_adapter extends  RecyclerView.Adapter<house_adapter.ViewHolde
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         final House data = houses.get(i);
+        if (data.img != null)
         Picasso.with(context).load(data.img).into(viewHolder.room_img);
         viewHolder.room_address.setText("Địa Chỉ: "+data.address);
         viewHolder.room_price.setText("Giá Phòng: "+data.price);

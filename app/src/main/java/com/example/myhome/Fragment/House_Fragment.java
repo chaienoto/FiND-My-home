@@ -77,23 +77,26 @@ public class House_Fragment extends Fragment implements house_adapter.OnItemClic
                                     final String address=documentSnapshot.get("house_address").toString();
                                     final String price=documentSnapshot.get("house_price").toString();
                                     final String detail=documentSnapshot.get("house_detail").toString();
-                                    ArrayList<String> list = (ArrayList<String>) documentSnapshot.get("house_picture_id");
                                     StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-                                    storageRef.child("images/" + list.get(0)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            Uri picture=uri;
-                                            houses.add(new House(house,address,price,detail,picture,pID+"/"+dID+"/house/"+documentSnapshot.getId()));
-                                            house_adapter adapter = new house_adapter(getActivity(),houses, House_Fragment.this);
-                                            LinearLayoutManager manager = new LinearLayoutManager(House_Fragment.this.getContext());
-                                            recyclerView.setLayoutManager(manager);
-                                            recyclerView.setAdapter(adapter);
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                        }
-                                    });
+                                    final ArrayList<String> list = (ArrayList<String>) documentSnapshot.get("house_picture_id");
+                                    if (!list.isEmpty()) {
+                                        storageRef.child("images/" + list.get(0)).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                Uri picture=uri;
+                                                houses.add(new House(house,address,price,detail,picture,pID+"/"+dID+"/house/"+documentSnapshot.getId()));
+                                                showData(houses);
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                            }
+                                        });
+                                    } else {
+                                        houses.add(new House(house,address,price,detail,null,pID+"/"+dID+"/house/"+documentSnapshot.getId()));
+                                        showData(houses);
+                                    }
+
                                 }
                             }
                         });
@@ -101,6 +104,12 @@ public class House_Fragment extends Fragment implements house_adapter.OnItemClic
                 }
             }
         });
+    }
+    private void showData(ArrayList<House> list){
+        house_adapter adapter = new house_adapter(getActivity(),houses, House_Fragment.this);
+        LinearLayoutManager manager = new LinearLayoutManager(House_Fragment.this.getContext());
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
